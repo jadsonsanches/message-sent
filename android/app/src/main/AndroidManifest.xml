@@ -1,8 +1,8 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
     package="com.example.message_sent_app">
    <application
-        android:label="message_sent_app"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Message Sent"
+        android:icon="@mipmap/launcher_icon" tools:replace="android:icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -37,5 +37,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3233936660028706~3004774699"/>
     </application>
 </manifest>
