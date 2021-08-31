@@ -21,73 +21,96 @@ class _HomeScreenState extends State<HomeScreen> {
   var phone = TextEditingController();
   var message = TextEditingController();
 
-  static final _kAdIndex = 4;
-  late BannerAd _ad;
   bool _isAdLoaded = false;
 
-  BannerAd myBanner = BannerAd(
-    adUnitId: AdHelper.bannerAdUnitId,
+  final BannerAd myBanner = BannerAd(
     size: AdSize.banner,
-    request: AdRequest(),
+    adUnitId: AdHelper.bannerAdUnitId,
     listener: BannerAdListener(
-      onAdLoaded: (Ad ad) => print('Ad loaded.'),
-      // Called when an ad request failed.
+      onAdLoaded: (Ad ad) => print('_isAdLoaded = true'),
       onAdFailedToLoad: (Ad ad, LoadAdError error) {
-        // Dispose the ad here to free resources.
         ad.dispose();
         print('Ad failed to load: $error');
       },
-      // Called when an ad opens an overlay that covers the screen.
       onAdOpened: (Ad ad) => print('Ad opened.'),
-      // Called when an ad removes an overlay that covers the screen.
       onAdClosed: (Ad ad) => print('Ad closed.'),
-      // Called when an impression occurs on the ad.
       onAdImpression: (Ad ad) => print('Ad impression.'),
     ),
+    request: AdRequest(),
   );
 
-  // @override
-  // void initState() {
-  //   super.initState();
+  @override
+  void initState() {
+    super.initState();
+    myBanner.load();
+  }
 
-  //   _ad = BannerAd(
-  //     adUnitId: AdHelper.bannerAdUnitId,
-  //     size: AdSize.banner,
-  //     request: AdRequest(),
-  //     listener: BannerAdListener(
-  //       onAdLoaded: (Ad ad) => setState(() {
-  //         _isAdLoaded = true;
-  //       }),
-  //       onAdFailedToLoad: (ad, error) {
-  //         print('Ad load failed (code=${error.code} message=${error.message})');
-  //         // ad.dispose();
-  //       },
-  //     ),
-  //   );
+  // static final _kAdIndex = 4;
+  // late BannerAd _ad;
 
-  //   // myBanner = BannerAd(
-  //   //   adUnitId: AdHelper.bannerAdUnitId,
-  //   //   size: AdSize.banner,
-  //   //   request: AdRequest(),
-  //   //   listener: BannerAdListener(onAdLoaded: (_) {
-  //   //     setState(() {
-  //   //       _isAdLoaded = true;
-  //   //     });
-  //   //   }, onAdFailedToLoad: (ad, error) {
-  //   //     ad.dispose();
-  //   //     print('Ad Failed to load with Error: $error');
-  //   //   }),
-  //   // );
+  // BannerAd myBanner = BannerAd(
+  //   adUnitId: AdHelper.bannerAdUnitId,
+  //   size: AdSize.banner,
+  //   request: AdRequest(),
+  //   listener: BannerAdListener(
+  //     onAdLoaded: (Ad ad) => print('Ad loaded.'),
+  //     // Called when an ad request failed.
+  //     onAdFailedToLoad: (Ad ad, LoadAdError error) {
+  //       // Dispose the ad here to free resources.
+  //       ad.dispose();
+  //       print('Ad failed to load: $error');
+  //     },
+  //     // Called when an ad opens an overlay that covers the screen.
+  //     onAdOpened: (Ad ad) => print('Ad opened.'),
+  //     // Called when an ad removes an overlay that covers the screen.
+  //     onAdClosed: (Ad ad) => print('Ad closed.'),
+  //     // Called when an impression occurs on the ad.
+  //     onAdImpression: (Ad ad) => print('Ad impression.'),
+  //   ),
+  // );
 
-  //   _ad.load();
-  // myBanner.load();
-  // }
+  // // @override
+  // // void initState() {
+  // //   super.initState();
 
-  // @override
-  // void dispose() {
-  //   myBanner.dispose();
-  //   super.dispose();
-  // }
+  // //   _ad = BannerAd(
+  // //     adUnitId: AdHelper.bannerAdUnitId,
+  // //     size: AdSize.banner,
+  // //     request: AdRequest(),
+  // //     listener: BannerAdListener(
+  // //       onAdLoaded: (Ad ad) => setState(() {
+  // //         _isAdLoaded = true;
+  // //       }),
+  // //       onAdFailedToLoad: (ad, error) {
+  // //         print('Ad load failed (code=${error.code} message=${error.message})');
+  // //         // ad.dispose();
+  // //       },
+  // //     ),
+  // //   );
+
+  // //   // myBanner = BannerAd(
+  // //   //   adUnitId: AdHelper.bannerAdUnitId,
+  // //   //   size: AdSize.banner,
+  // //   //   request: AdRequest(),
+  // //   //   listener: BannerAdListener(onAdLoaded: (_) {
+  // //   //     setState(() {
+  // //   //       _isAdLoaded = true;
+  // //   //     });
+  // //   //   }, onAdFailedToLoad: (ad, error) {
+  // //   //     ad.dispose();
+  // //   //     print('Ad Failed to load with Error: $error');
+  // //   //   }),
+  // //   // );
+
+  // //   _ad.load();
+  // // myBanner.load();
+  // // }
+
+  // // @override
+  // // void dispose() {
+  // //   myBanner.dispose();
+  // //   super.dispose();
+  // // }
 
   Widget checkForAd() {
     if (_isAdLoaded == true) {
@@ -109,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
     phone.clear();
     message.clear();
 
-    myBanner.load();
+    // myBanner.load();
 
     launchWhatsApp() async {
       final link = WhatsAppUnilink(
@@ -208,7 +231,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: Text("Send")),
                 ),
                 Spacer(flex: 2),
-                checkForAd()
+                Container(
+                  child: AdWidget(ad: myBanner),
+                  width: myBanner.size.width.toDouble(),
+                  height: myBanner.size.height.toDouble(),
+                  alignment: Alignment.center,
+                )
               ],
             ),
           ),
