@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:message_sent_app/ad_helper.dart';
 import 'package:message_sent_app/constants.dart';
 import 'package:message_sent_app/widgets/ChangeThemeButtonWidget.dart';
 import 'package:whatsapp_unilink/whatsapp_unilink.dart';
@@ -19,12 +21,118 @@ class _HomeScreenState extends State<HomeScreen> {
   var phone = TextEditingController();
   var message = TextEditingController();
 
+  bool _isAdLoaded = false;
+
+  final BannerAd myBanner = BannerAd(
+    size: AdSize.banner,
+    adUnitId: AdHelper.bannerAdUnitId,
+    listener: BannerAdListener(
+      onAdLoaded: (Ad ad) => print('_isAdLoaded = true'),
+      onAdFailedToLoad: (Ad ad, LoadAdError error) {
+        ad.dispose();
+        print('Ad failed to load: $error');
+      },
+      onAdOpened: (Ad ad) => print('Ad opened.'),
+      onAdClosed: (Ad ad) => print('Ad closed.'),
+      onAdImpression: (Ad ad) => print('Ad impression.'),
+    ),
+    request: AdRequest(),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    myBanner.load();
+  }
+
+  // static final _kAdIndex = 4;
+  // late BannerAd _ad;
+
+  // BannerAd myBanner = BannerAd(
+  //   adUnitId: AdHelper.bannerAdUnitId,
+  //   size: AdSize.banner,
+  //   request: AdRequest(),
+  //   listener: BannerAdListener(
+  //     onAdLoaded: (Ad ad) => print('Ad loaded.'),
+  //     // Called when an ad request failed.
+  //     onAdFailedToLoad: (Ad ad, LoadAdError error) {
+  //       // Dispose the ad here to free resources.
+  //       ad.dispose();
+  //       print('Ad failed to load: $error');
+  //     },
+  //     // Called when an ad opens an overlay that covers the screen.
+  //     onAdOpened: (Ad ad) => print('Ad opened.'),
+  //     // Called when an ad removes an overlay that covers the screen.
+  //     onAdClosed: (Ad ad) => print('Ad closed.'),
+  //     // Called when an impression occurs on the ad.
+  //     onAdImpression: (Ad ad) => print('Ad impression.'),
+  //   ),
+  // );
+
+  // // @override
+  // // void initState() {
+  // //   super.initState();
+
+  // //   _ad = BannerAd(
+  // //     adUnitId: AdHelper.bannerAdUnitId,
+  // //     size: AdSize.banner,
+  // //     request: AdRequest(),
+  // //     listener: BannerAdListener(
+  // //       onAdLoaded: (Ad ad) => setState(() {
+  // //         _isAdLoaded = true;
+  // //       }),
+  // //       onAdFailedToLoad: (ad, error) {
+  // //         print('Ad load failed (code=${error.code} message=${error.message})');
+  // //         // ad.dispose();
+  // //       },
+  // //     ),
+  // //   );
+
+  // //   // myBanner = BannerAd(
+  // //   //   adUnitId: AdHelper.bannerAdUnitId,
+  // //   //   size: AdSize.banner,
+  // //   //   request: AdRequest(),
+  // //   //   listener: BannerAdListener(onAdLoaded: (_) {
+  // //   //     setState(() {
+  // //   //       _isAdLoaded = true;
+  // //   //     });
+  // //   //   }, onAdFailedToLoad: (ad, error) {
+  // //   //     ad.dispose();
+  // //   //     print('Ad Failed to load with Error: $error');
+  // //   //   }),
+  // //   // );
+
+  // //   _ad.load();
+  // // myBanner.load();
+  // // }
+
+  // // @override
+  // // void dispose() {
+  // //   myBanner.dispose();
+  // //   super.dispose();
+  // // }
+
+  Widget checkForAd() {
+    if (_isAdLoaded == true) {
+      return Container(
+        child: AdWidget(ad: myBanner),
+        width: myBanner.size.width.toDouble(),
+        height: myBanner.size.height.toDouble(),
+        alignment: Alignment.center,
+      );
+    } else {
+      return CircularProgressIndicator();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
     ddi.clear();
     phone.clear();
     message.clear();
+
+    // myBanner.load();
 
     launchWhatsApp() async {
       final link = WhatsAppUnilink(
@@ -123,6 +231,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: Text("Send")),
                 ),
                 Spacer(flex: 2),
+                Container(
+                  child: AdWidget(ad: myBanner),
+                  width: myBanner.size.width.toDouble(),
+                  height: myBanner.size.height.toDouble(),
+                  alignment: Alignment.center,
+                )
               ],
             ),
           ),
